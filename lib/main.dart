@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sudoku/cubit/timer_cubit.dart';
 import 'package:sudoku/pages/home_page.dart';
 
 void main() {
@@ -12,21 +14,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        pageTransitionsTheme: const PageTransitionsTheme(
-            builders: {TargetPlatform.android: ZoomPageTransitionsBuilder()}),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                backgroundColor: Colors.black54,
-                foregroundColor: Colors.white,
-                textStyle: const TextStyle(fontSize: 20),
-                elevation: 5)),
-        useMaterial3: true,
+    return BlocProvider<TimerCubit>(
+      create: (context) => TimerCubit(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          pageTransitionsTheme: const PageTransitionsTheme(
+              builders: {TargetPlatform.android: ZoomPageTransitionsBuilder()}),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  backgroundColor: Colors.black54,
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(fontSize: 20),
+                  elevation: 5)),
+          useMaterial3: true,
+        ),
+        home: const HomePage(),
       ),
-      home: const HomePage(),
     );
   }
 }

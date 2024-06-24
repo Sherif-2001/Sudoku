@@ -1,7 +1,9 @@
-import 'dart:async';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sudoku/cubit/timer_cubit.dart';
 import 'package:sudoku/models/sudoku_board.dart';
+import 'package:sudoku/widgets/timer_widget.dart';
 import 'package:sudoku/widgets/tool_button.dart';
 
 class GamePage extends StatefulWidget {
@@ -18,27 +20,14 @@ class _GamePageState extends State<GamePage> {
   late SudokuBoard sudokuBoard;
   int selectedRow = -1;
   int selectedCol = -1;
-  final Stopwatch _stopwatch = Stopwatch();
-  late Timer _timer;
   final _confettiController = ConfettiController();
 
   @override
   void initState() {
     super.initState();
-    _startStopwatch();
+    context.read<TimerCubit>().startStopwatch();
     sudokuBoard = SudokuBoard();
     sudokuBoard.generatePuzzle(widget.difficulty);
-  }
-
-  void _startStopwatch() {
-    _stopwatch.start();
-    _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
-      setState(() {});
-    });
-  }
-
-  void _toggleStopwatch() {
-    _stopwatch.isRunning ? _stopwatch.stop() : _stopwatch.start();
   }
 
   String _formatTime(int milliseconds) {
@@ -65,9 +54,8 @@ class _GamePageState extends State<GamePage> {
   }
 
   void _restartGame() {
+    context.read<TimerCubit>().resetStopwatch();
     setState(() {
-      _stopwatch.reset();
-      _startStopwatch();
       sudokuBoard.generatePuzzle(widget.difficulty); // Reset Sudoku board
       selectedRow = -1; // Reset selected cell
       selectedCol = -1;
@@ -85,12 +73,16 @@ class _GamePageState extends State<GamePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text("Time"),
-            Text(
-              _formatTime(_stopwatch.elapsedMilliseconds),
-              style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade700),
+            BlocBuilder<TimerCubit, TimerCubitState>(
+              builder: (context, state) {
+                return Text(
+                  _formatTime(state.milliseconds),
+                  style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade700),
+                );
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -102,10 +94,22 @@ class _GamePageState extends State<GamePage> {
                       foregroundColor: Colors.grey.shade800,
                       padding: EdgeInsets.zero),
                   onPressed: () {
-                    _toggleStopwatch();
+                    context.read<TimerCubit>().toggleStopwatch();
                     Navigator.pop(context);
                   },
                   child: const Icon(Icons.play_arrow),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      backgroundColor: Colors.grey.shade300,
+                      foregroundColor: Colors.grey.shade800,
+                      padding: EdgeInsets.zero),
+                  onPressed: () {
+                    _restartGame();
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(Icons.restart_alt),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -154,12 +158,16 @@ class _GamePageState extends State<GamePage> {
                 Column(
                   children: [
                     const Text("Time"),
-                    Text(
-                      _formatTime(_stopwatch.elapsedMilliseconds),
-                      style: TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade700),
+                    BlocBuilder<TimerCubit, TimerCubitState>(
+                      builder: (context, state) {
+                        return Text(
+                          _formatTime(state.milliseconds),
+                          style: TextStyle(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey.shade700),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -203,7 +211,6 @@ class _GamePageState extends State<GamePage> {
 
   @override
   void dispose() {
-    _timer.cancel();
     _confettiController.dispose();
     super.dispose();
   }
@@ -231,18 +238,7 @@ class _GamePageState extends State<GamePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Column(
-                children: [
-                  const Text("Time"),
-                  Text(
-                    _formatTime(_stopwatch.elapsedMilliseconds),
-                    style: TextStyle(
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
+              const TimerWidget(),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
@@ -250,11 +246,15 @@ class _GamePageState extends State<GamePage> {
                     foregroundColor: Colors.grey.shade800,
                     padding: EdgeInsets.zero),
                 onPressed: () {
-                  _toggleStopwatch();
+                  context.read<TimerCubit>().toggleStopwatch();
                   showPauseDialog();
                 },
-                child:
-                    Icon(_stopwatch.isRunning ? Icons.pause : Icons.play_arrow),
+                child: BlocBuilder<TimerCubit, TimerCubitState>(
+                  builder: (context, state) {
+                    return Icon(
+                        state.isRunning ? Icons.pause : Icons.play_arrow);
+                  },
+                ),
               ),
             ],
           ),
@@ -337,7 +337,7 @@ class _GamePageState extends State<GamePage> {
 
                     if (sudokuBoard.isGameComplete()) {
                       _confettiController.play();
-                      _toggleStopwatch();
+                      context.read<TimerCubit>().toggleStopwatch();
                       showGameCompleteDialog();
                     }
                   },
