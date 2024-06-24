@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sudoku/pages/game_page.dart';
 import 'package:sudoku/pages/home_page.dart';
 
 void main() {
@@ -20,7 +19,6 @@ class MyApp extends StatelessWidget {
             builders: {TargetPlatform.android: ZoomPageTransitionsBuilder()}),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-                shadowColor: Colors.blue,
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 backgroundColor: Colors.black54,
                 foregroundColor: Colors.white,
@@ -28,11 +26,7 @@ class MyApp extends StatelessWidget {
                 elevation: 5)),
         useMaterial3: true,
       ),
-      initialRoute: HomePage.id,
-      routes: {
-        HomePage.id: (context) => const HomePage(),
-        GamePage.id: (context) => const GamePage()
-      },
+      home: const HomePage(),
     );
   }
 }
