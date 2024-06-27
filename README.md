@@ -36,10 +36,10 @@ Make sure you have Flutter installed on your machine. You can download and insta
 
 ### Home Screen
 <p align="center">
-<img src="" width=300;  />
+<img src="https://github.com/Sherif-2001/Sudoku/assets/93449171/cd334430-1722-4178-8bbb-5652ac9d7b2e" width=300;  />
 </p>
 
 ### Game Screen
 <p align="center">
-<img src="" width=300; align="center" />
+<img src="https://github.com/Sherif-2001/Sudoku/assets/93449171/1030ae1f-6975-4251-908d-c86b994d1883" width=300; align="center" />
 </p>
