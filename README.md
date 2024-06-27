@@ -13,8 +13,8 @@ Make sure you have Flutter installed on your machine. You can download and insta
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/Sherif-2001/sudoku.git
-   cd sudoku
+   git clone https://github.com/Sherif-2001/Sudoku.git
+   cd Sudoku
    ```
 
 2. Get the required packages:
