@@ -110,7 +110,7 @@ class SudokuBoard {
     solve();
     switch (difficulty) {
       case Difficulty.easy:
-        removeDigits(1); // Adjust the number of removed digits for difficulty
+        removeDigits(20); // Adjust the number of removed digits for difficulty
         break;
       case Difficulty.normal:
         removeDigits(40); // Adjust the number of removed digits for difficulty
